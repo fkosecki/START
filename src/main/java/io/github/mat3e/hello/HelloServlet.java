@@ -1,5 +1,6 @@
-package io.github.mat3e;
+package io.github.mat3e.hello;
 
+import io.github.mat3e.lang.Lang;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,8 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
-@WebServlet(name = "Hello", urlPatterns = {"/api/*"})
+@WebServlet(name = "Hello", urlPatterns = {"/api"})
 public class HelloServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(HelloServlet.class);
     private static  final String NAME_PARAM = "name";
@@ -33,9 +35,16 @@ public class HelloServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         logger.info("Request with parameters " + req.getParameterMap());
-        String name = req.getParameter(NAME_PARAM);
-        String lang = req.getParameter(LANG_PARAM);
+        var name = req.getParameter(NAME_PARAM);
+        var lang = req.getParameter(LANG_PARAM);
+        Integer langId = null;
+        try{
+            langId  = Integer.valueOf(lang);
+        }catch (NumberFormatException exception){
+            logger.warn("Non-numeric Language id used:" + lang);
+        }
+
         resp.getWriter()
-                .write(service.prepareGreeting(name,lang));
+                .write(service.prepareGreeting(name,langId));
     }
 }
